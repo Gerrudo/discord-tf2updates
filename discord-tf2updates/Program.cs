@@ -14,11 +14,12 @@ namespace discordtf2updates
 
         public static async Task Main(string[] args)
         {
+            string discordToken = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json")).discordToken;
+            ulong channelId = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json")).channelId;
+
             var _client = new DiscordSocketClient();
             _client.MessageReceived += CommandHandlerAsync;
             _client.Log += Log;
-
-            string discordToken = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json")).discordToken;
 
             await _client.LoginAsync(TokenType.Bot, discordToken);
             await _client.StartAsync();
@@ -28,7 +29,7 @@ namespace discordtf2updates
 
         private static Task Log(LogMessage msg)
         {
-            Console.WriteLine(msg.ToString());
+            CustomConsole.CustomWriteLine(msg.ToString());
             return Task.CompletedTask;
         }
 
@@ -43,13 +44,16 @@ namespace discordtf2updates
             
             switch (command)
             {
+                case "setchannel":
+                    await SetChannel(message);
+                    break;
                 case "latest":
                     var updates = await GetAppNewsAsync();
                     var embed = EmbedUpdates(updates.appnews.newsitems[0]);
                     await message.Channel.SendMessageAsync(embed: embed.Build());
                     break;
                 case "help":
-                    await message.Channel.SendMessageAsync($@"{message.Author.Mention}, here are the current commands: !latest");
+                    await message.Channel.SendMessageAsync($@"{message.Author.Mention}, here are the current commands: !setchannel, !latest, !help");
                     break;
             }
 
@@ -110,6 +114,45 @@ namespace discordtf2updates
                 Url = newsitem.url,
             };
             return embed;
+        }
+
+        private static async Task CheckForUpdatesAsync(Newsitem storedUpdates, IMessageChannel channel)
+        {
+            CustomConsole.CustomWriteLine("Checking Steam for updates...");
+            var updates = await GetAppNewsAsync();
+            if (updates.appnews.newsitems[0].date > storedUpdates.date)
+            {
+                CustomConsole.CustomWriteLine("Updates found, posting to Discord.");
+                var embed = EmbedUpdates(updates.appnews.newsitems[0]);
+                await channel.SendMessageAsync(embed: embed.Build());
+            }
+            else
+            {
+                CustomConsole.CustomWriteLine("No updates.");
+            }
+        }
+
+        private static async Task SetChannel(SocketMessage message)
+        {
+            CustomConsole.CustomWriteLine("Getting initial updates from Steam...");
+            var storedUpdates = await GetAppNewsAsync();
+
+            var channel = message.Channel as IMessageChannel;
+
+            SetTimer(storedUpdates, channel);
+
+            CustomConsole.CustomWriteLine("An update channel has been set.");
+        }
+
+        private static void SetTimer(Updates storedUpdates, IMessageChannel channel)
+        {
+            var startTimeSpan = TimeSpan.Zero;
+            var periodTimeSpan = TimeSpan.FromMinutes(1);
+
+            var timer = new System.Threading.Timer(async (e) =>
+            {
+                await CheckForUpdatesAsync(storedUpdates.appnews.newsitems[0], channel);
+            }, null, startTimeSpan, periodTimeSpan);
         }
     }
 }
