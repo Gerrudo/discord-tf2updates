@@ -1,5 +1,5 @@
 # discord-tf2updates
-A Discord bot for posting News and Updates from the popular online FPS from Valve, Team Fortress 2.
+A Discord bot for posting News and Updates from the popular online FPS by Valve, Team Fortress 2.
 
 <img width="438" alt="Screenshot_5" src="https://user-images.githubusercontent.com/43029469/179492201-8e512deb-e360-42e6-87fa-2d159b450991.png">
 
