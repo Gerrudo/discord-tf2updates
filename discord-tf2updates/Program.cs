@@ -132,7 +132,7 @@ namespace discordtf2updates
             }
         }
 
-        private static async Task SetChannel(SocketMessage message)
+        private static async Task SetChannelAsync(SocketMessage message)
         {
             CustomConsole.CustomWriteLine("Getting initial updates from Steam...");
             var storedUpdates = await GetAppNewsAsync();
