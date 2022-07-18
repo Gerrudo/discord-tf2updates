@@ -13,10 +13,10 @@ The bot has a few commands, including !setchannel, !latest and !help
   
 ## !latest
 
-  This will post the most recent updates/news for tf2, this can be run in any channel where the bot has permissions. This command can be run without first invoking         !setchannel.
+  This will post the most recent updates/news for Team Fortress 2, this can be run in any channel where the bot has permissions. This command can be run without first     invoking !setchannel.
 
 ## !setchannel
 
-  This is required to be run before any updates will be pasted, the updates will be posted in the channel where this command is run, you can change channel by running     this command again. The bot will check for updates every minute, and will post if any new updates are found.
+  This is required to be run before any updates will be posted, the updates will be posted in the channel where this command is run, you can change channel by running     this command again. The bot will check for updates every minute, and will post if any new updates are found.
   
   Please note: if you set this option and provide your own Steam Web API key, this will run a GET request every minute, so if you are already using your Steam Web API     key for another purpose, this could push you over the daily request limit.
