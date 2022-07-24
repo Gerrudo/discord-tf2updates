@@ -44,7 +44,7 @@ namespace discordtf2updates
             switch (command)
             {
                 case "setchannel":
-                    await SetChannel(message);
+                    await SetChannelAsync(message);
                     break;
                 case "latest":
                     var updates = await GetAppNewsAsync();
