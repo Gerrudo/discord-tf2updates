@@ -15,7 +15,6 @@ namespace discordtf2updates
         public static async Task Main(string[] args)
         {
             string discordToken = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json")).discordToken;
-            ulong channelId = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json")).channelId;
 
             var _client = new DiscordSocketClient();
             _client.MessageReceived += CommandHandlerAsync;
@@ -29,7 +28,7 @@ namespace discordtf2updates
 
         private static Task Log(LogMessage msg)
         {
-            CustomConsole.CustomWriteLine(msg.ToString());
+            Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
 
