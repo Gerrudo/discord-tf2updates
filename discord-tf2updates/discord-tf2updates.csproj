@@ -12,7 +12,6 @@
     <None Remove="ReverseMarkdown" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Discord.Net" Version="3.7.2" />
     <PackageReference Include="RestSharp" Version="108.0.1" />
     <PackageReference Include="ReverseMarkdown" Version="3.23.1" />
