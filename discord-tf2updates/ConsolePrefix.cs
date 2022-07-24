@@ -5,7 +5,7 @@ namespace discordtf2updates
     {
         public static void CustomWriteLine(string msg)
         {
-            Console.WriteLine(String.Format("{0} {1}", DateTime.Now.ToString("HH:mm:ss"), msg));
+            Console.WriteLine(String.Format("{0} Bot         {1}", DateTime.Now.ToString("HH:mm:ss"), msg));
         }
     }
 }

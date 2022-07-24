@@ -2,7 +2,13 @@
 {
     class Config
     {
-        public string discordToken { get; set; }
-        public string steamToken { get; set; }
+        public string DiscordToken { get; set; }
+        public string SteamToken { get; set; }
+        public int PollingRateInSecs { get; set; }
+        public string SteamWebApiUri { get; set; }
+        public string NewsEndpoint { get; set; }
+        public int AppId { get; set; }
+        public string Feeds { get; set; }
+        public string CommandList { get; set; }
     }
 }

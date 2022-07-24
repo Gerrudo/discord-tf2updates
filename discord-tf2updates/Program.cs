@@ -1,27 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Discord;
 using Discord.WebSocket;
-using Newtonsoft.Json;
 using RestSharp;
 
 namespace discordtf2updates
 {
     class Program
     {
+        public static Config config = JsonSerializer.Deserialize<Config>(File.ReadAllText("./config.json"));
+
         private DiscordSocketClient _client;
+
+        private static List<Guild> _guilds;
 
         public static async Task Main(string[] args)
         {
-            string discordToken = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json")).discordToken;
-
             var _client = new DiscordSocketClient();
             _client.MessageReceived += CommandHandlerAsync;
             _client.Log += Log;
 
-            await _client.LoginAsync(TokenType.Bot, discordToken);
+            await _client.LoginAsync(TokenType.Bot, config.DiscordToken);
             await _client.StartAsync();
+
+            _guilds = new List<Guild>();
+
+            await CheckForUpdatesAsync(TimeSpan.FromSeconds(config.PollingRateInSecs));
 
             await Task.Delay(-1);
         }
@@ -44,7 +52,7 @@ namespace discordtf2updates
             switch (command)
             {
                 case "setchannel":
-                    await SetChannelAsync(message);
+                    SetChannel(message);
                     break;
                 case "latest":
                     var updates = await GetAppNewsAsync();
@@ -52,7 +60,7 @@ namespace discordtf2updates
                     await message.Channel.SendMessageAsync(embed: embed.Build());
                     break;
                 case "help":
-                    await message.Channel.SendMessageAsync($@"{message.Author.Mention}, here are the current commands: !setchannel, !latest, !help");
+                    await message.Channel.SendMessageAsync($@"{message.Author.Mention}, here are the current commands: {config.CommandList}");
                     break;
             }
 
@@ -80,18 +88,14 @@ namespace discordtf2updates
 
         private static async Task<Updates> GetAppNewsAsync()
         {
-            string steamToken = JsonConvert.DeserializeObject<Config>(File.ReadAllText("./config.json")).steamToken;
+            var client = new RestClient(config.SteamWebApiUri);
 
-            string uri = "https://api.steampowered.com";
+            var request = new RestRequest(config.NewsEndpoint);
 
-            var client = new RestClient(uri);
+            request.AddHeader("token", config.SteamToken);
 
-            var request = new RestRequest("/ISteamNews/GetNewsForApp/v0002");
-
-            request.AddHeader("token", steamToken);
-
-            request.AddParameter("appid", 440);
-            request.AddParameter("feeds", "tf2_blog");
+            request.AddParameter("appid", config.AppId);
+            request.AddParameter("feeds", config.Feeds);
             request.AddParameter("count", 1);
 
             var response = await client.GetAsync<Updates>(request);
@@ -115,43 +119,50 @@ namespace discordtf2updates
             return embed;
         }
 
-        private static async Task CheckForUpdatesAsync(Newsitem storedUpdates, IMessageChannel channel)
+        private static void SetChannel(SocketMessage message)
         {
-            CustomConsole.CustomWriteLine("Checking Steam for updates...");
-            var updates = await GetAppNewsAsync();
-            if (updates.appnews.newsitems[0].date > storedUpdates.date)
-            {
-                CustomConsole.CustomWriteLine("Updates found, posting to Discord.");
-                var embed = EmbedUpdates(updates.appnews.newsitems[0]);
-                await channel.SendMessageAsync(embed: embed.Build());
-            }
-            else
-            {
-                CustomConsole.CustomWriteLine("No updates.");
-            }
+            var Guild = new Guild();
+
+            Guild.Message = message;
+            Guild.Channel = message.Channel;
+
+            _guilds.Add(Guild);
+
+            CustomConsole.CustomWriteLine($@"An update channel has been added by {message.Author.Username}");
         }
 
-        private static async Task SetChannelAsync(SocketMessage message)
+        private static async Task CheckForUpdatesAsync(TimeSpan timeSpan)
         {
             CustomConsole.CustomWriteLine("Getting initial updates from Steam...");
             var storedUpdates = await GetAppNewsAsync();
 
-            var channel = message.Channel as IMessageChannel;
+            var periodicTimer = new PeriodicTimer(timeSpan);
+            while (await periodicTimer.WaitForNextTickAsync())
+            {
+                CustomConsole.CustomWriteLine("Checking Steam for updates...");
+                var updates = await GetAppNewsAsync();
 
-            SetTimer(storedUpdates, channel);
-
-            CustomConsole.CustomWriteLine("An update channel has been set.");
+                if (updates.appnews.newsitems[0].date > storedUpdates.appnews.newsitems[0].date)
+                {
+                    CustomConsole.CustomWriteLine("Updates found, posting to Discord.");
+                    storedUpdates = updates;
+                    var embed = EmbedUpdates(updates.appnews.newsitems[0]);
+                    await PostUpdatesAsync(embed);
+                }
+                else
+                {
+                    CustomConsole.CustomWriteLine("No updates.");
+                }
+            }
         }
 
-        private static void SetTimer(Updates storedUpdates, IMessageChannel channel)
+        private static async Task PostUpdatesAsync(EmbedBuilder embed)
         {
-            var startTimeSpan = TimeSpan.Zero;
-            var periodTimeSpan = TimeSpan.FromMinutes(1);
-
-            var timer = new System.Threading.Timer(async (e) =>
+            foreach (Guild Guild in _guilds)
             {
-                await CheckForUpdatesAsync(storedUpdates.appnews.newsitems[0], channel);
-            }, null, startTimeSpan, periodTimeSpan);
+                await Guild.Channel.SendMessageAsync(embed: embed.Build());
+                CustomConsole.CustomWriteLine($@"Sending Embed to {Guild.Channel.Name}");
+            }
         }
     }
 }
