@@ -21,14 +21,16 @@ namespace discordtf2updates
             var _apiHandler = new ApiHandler();
 
             var _checkUpdates = new CheckUpdates();
-            var storedUpdates = await _checkUpdates.InitalUpdates(_apiHandler);
+            //We store our inital updates so we have a timestamp to compare against.
+            var latestUpdates = await _checkUpdates.InitalUpdates(_apiHandler);
 
             _guilds = new List<Guild>();
 
             var periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(config.PollingRateInSecs));
             while (await periodicTimer.WaitForNextTickAsync())
             {
-                await _checkUpdates.CheckForUpdatesAsync(_apiHandler, storedUpdates);
+                //The stored updates is again set, so we can compare each iteration.
+                latestUpdates = await _checkUpdates.CheckForUpdatesAsync(_apiHandler, latestUpdates);
             }
 
             await Task.Delay(-1);
