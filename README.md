@@ -27,8 +27,8 @@ This project uses Steam's Web API, this fetches news from /ISteamNews/GetNewsFor
   
   In case you wanted to set permissions manually, weirdo.
 
-    - [x] bot
-      - [x] Send Messages
-      - [x] Embed Links
-      - [x] Use Slash Commands
-    - [x] applications.commands
+  - [x] bot
+    - [x] Send Messages
+    - [x] Embed Links
+    - [x] Use Slash Commands
+  - [x] applications.commands

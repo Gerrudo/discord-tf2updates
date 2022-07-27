@@ -10,18 +10,18 @@ namespace discordtf2updates
 {
     public class Commands
     {
-        private static List<Guild> _guilds;
+        private List<Guild> _guilds;
 
-        public async Task BuildGlobalCommandsAsync(DiscordSocketClient client)
+        public async Task BuildCommandsAsync(DiscordSocketClient client, bool isGlobal)
         {
             //These need to be loaded from an external file!
-            string[] commandNames =
+            string[] commandNames = new string[]
                 {
                 "latest-updates",
                 "set-channel",
                 "remove-channel"
                 };
-
+            
             string[] commandDescriptions =
                 {
                 "Post the latest news and updates.",
@@ -31,13 +31,24 @@ namespace discordtf2updates
 
             for (int i = 0; i < commandNames.Length; i++)
             {
-                var globalCommand = new SlashCommandBuilder();
-                globalCommand.WithName(commandNames[i]);
-                globalCommand.WithDescription(commandDescriptions[i]);
+                var newCommand = new SlashCommandBuilder();
+                if (!isGlobal)
+                {
+                    newCommand.WithName($"test-{commandNames[i]}");
+                }
+                newCommand.WithDescription(commandDescriptions[i]);
 
                 try
                 {
-                    await client.CreateGlobalApplicationCommandAsync(globalCommand.Build());
+                    if (isGlobal)
+                    {
+                        await client.CreateGlobalApplicationCommandAsync(newCommand.Build());
+                    }
+                    else
+                    {
+                        var guild = client.GetGuild(Program.config.DevGuildId);
+                        await guild.CreateApplicationCommandAsync(newCommand.Build());
+                    }
                 }
                 catch (HttpException exception)
                 {
@@ -50,15 +61,13 @@ namespace discordtf2updates
 
         public async Task HandleLatestUpdatesCommand(SocketSlashCommand command)
         {
-            var _checkUpdates = new CheckUpdates();
-
             var _embedUpdates = new EmbedUpdates();
-            var embed = _embedUpdates.BuildTF2Embed(_checkUpdates.latestupdate.appnews.newsitems[0]);
+            var embed = _embedUpdates.BuildTF2Embed(CheckUpdates.latestupdate.appnews.newsitems[0]);
 
             await command.RespondAsync(embed: embed.Build());
         }
 
-        public void HandleSetUpdateChannelCommand(SocketSlashCommand command)
+        public async Task HandleSetUpdateChannelCommand(SocketSlashCommand command)
         {
             _guilds = new List<Guild>();
 
@@ -67,10 +76,14 @@ namespace discordtf2updates
 
             _guilds.Add(Guild);
 
-            CustomConsole.CustomWriteLine($@"An update channel: {Guild.Channel.Name}, has been added by {command.User.Username}");
+            string response = $@"An update channel: {Guild.Channel.Name}, has been added by {command.User.Username}";
+
+            await command.RespondAsync(response);
+
+            CustomConsole.CustomWriteLine(response);
         }
 
-        public void HandleRemoveUpdateChannelCommand(SocketSlashCommand command)
+        public async Task HandleRemoveUpdateChannelCommand(SocketSlashCommand command)
         {
             var Guild = new Guild();
             Guild.Channel = command.Channel;
@@ -78,7 +91,11 @@ namespace discordtf2updates
             //Currently this is a limitation, as it will remove the whole Guild object, meaning all Channels that were added from a Guild will be removed.
             _guilds.Remove(Guild);
 
-            CustomConsole.CustomWriteLine($@"An update channel: {Guild.Channel.Name}, has been removed by {command.User.Username}");
+            string response = $@"An update channel: {Guild.Channel.Name}, has been removed by {command.User.Username}";
+
+            await command.RespondAsync(response);
+
+            CustomConsole.CustomWriteLine(response);
         }
 
         public async Task GlobalPostUpdatesAsync(EmbedBuilder embed)

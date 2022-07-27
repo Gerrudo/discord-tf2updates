@@ -9,6 +9,7 @@
         public string NewsEndpoint { get; set; }
         public int AppId { get; set; }
         public string Feeds { get; set; }
-        public string CommandList { get; set; }
+        public bool UseDevGuild { get; set; }
+        public ulong DevGuildId { get; set; }
     }
 }

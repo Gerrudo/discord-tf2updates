@@ -7,19 +7,16 @@ namespace discordtf2updates
 {
     public class DiscordBot
     {
-        //These two are null after StartAsync() finishes, do we need await Task.Delay(-1);?
         private DiscordSocketClient _client;
 
         private Commands _commands;
 
         public async Task StartAsync()
         {
-            var _client = new DiscordSocketClient();
+            _client = new DiscordSocketClient();
             _client.Log += Log;
             _client.Ready += ClientReadyAsync;
             _client.SlashCommandExecuted += SlashCommandHandlerAsync;
-
-            var _commands = new Commands();
 
             await _client.LoginAsync(TokenType.Bot, Program.config.DiscordToken);
             await _client.StartAsync();
@@ -33,22 +30,39 @@ namespace discordtf2updates
 
         private async Task ClientReadyAsync()
         {
-            await _commands.BuildGlobalCommandsAsync(_client);
+            _commands = new Commands();
+            await _commands.BuildCommandsAsync(_client, Program.config.UseDevGuild);
         }
 
         private async Task SlashCommandHandlerAsync(SocketSlashCommand command)
         {
-            switch (command.Data.Name)
+            //The command object is readonly.
+            string filteredCommand = command.Data.Name;
+
+            //This will remove the 'test-' prefix from the front of a guild command, so it is treated the same as if it's global command.
+            if (Program.config.UseDevGuild)
             {
-                case "latest-updates":
-                    await _commands.HandleLatestUpdatesCommand(command);
-                    break;
-                case "set-update-channel":
-                    _commands.HandleSetUpdateChannelCommand(command);
-                    break;
-                case "remove-update-channel":
-                    _commands.HandleRemoveUpdateChannelCommand(command);
-                    break;
+                filteredCommand = command.Data.Name.Remove(0, 5);
+            }
+
+            try
+            {
+                switch (filteredCommand)
+                {
+                    case "latest-updates":
+                        await _commands.HandleLatestUpdatesCommand(command);
+                        break;
+                    case "set-channel":
+                        await _commands.HandleSetUpdateChannelCommand(command);
+                        break;
+                    case "remove-channel":
+                        await _commands.HandleRemoveUpdateChannelCommand(command);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                await command.RespondAsync(@$"Whoops! An error occured. Please report this [here](https://github.com/Gerrudo/discord-tf2updates/issues/new). {ex.Message}");
             }
         }
     }

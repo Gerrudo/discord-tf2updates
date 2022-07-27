@@ -6,7 +6,7 @@ namespace discordtf2updates
 {
     public class CheckUpdates
     {
-        public Updates latestupdate;
+        public static Updates latestupdate;
 
         private async Task<Updates> InitalUpdates(ApiHandler ApiHandler)
         {
@@ -25,7 +25,7 @@ namespace discordtf2updates
             var periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(Program.config.PollingRateInSecs));
             while (await periodicTimer.WaitForNextTickAsync())
             {
-                //The stored updates is again set, so we can compare each iteration.
+                //latest is again set, so we can compare each iteration.
                 latestUpdates = await CheckForUpdatesAsync(_apiHandler, latestUpdates);
             }
         }
@@ -34,7 +34,7 @@ namespace discordtf2updates
         {
             CustomConsole.CustomWriteLine("Checking Steam for updates...");
 
-            var latestupdate = await apiHandler.GetAppNewsAsync();
+            latestupdate = await apiHandler.GetAppNewsAsync();
 
             if (latestupdate.appnews.newsitems[0].date > storedUpdates.appnews.newsitems[0].date)
             {
