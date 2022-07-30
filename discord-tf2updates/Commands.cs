@@ -11,7 +11,7 @@ namespace discordtf2updates
 {
     public class Commands
     {
-        private List<Guild> _guilds;
+        private static List<Guild> _guilds;
 
         public async Task BuildCommandsAsync(DiscordSocketClient client)
         {
