@@ -1,6 +1,6 @@
 ﻿{
-  "DiscordToken": "OTk1Mjg2ODk3NzU4ODMwNjMy.GnXrbt.24KqJNg-G_x-TxbhClCk2HY616A8AVEYhofatk",
-  "SteamToken": "887DFF6D6D7A6C74D87A80249EBE1413",
+  "DiscordToken": "",
+  "SteamToken": "",
   "PollingRateInSecs": 15,
   "SteamWebApiUri": "https://api.steampowered.com",
   "NewsEndpoint": "/ISteamNews/GetNewsForApp/v0002",
