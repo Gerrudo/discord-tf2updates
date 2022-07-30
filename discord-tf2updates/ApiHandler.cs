@@ -7,14 +7,14 @@ namespace discordtf2updates
     {
         public async Task<Updates> GetAppNewsAsync()
         {
-            var client = new RestClient(Program.config.SteamWebApiUri);
+            var client = new RestClient(Configuration.AppConfig.SteamWebApiUri);
 
-            var request = new RestRequest(Program.config.NewsEndpoint);
+            var request = new RestRequest(Configuration.AppConfig.NewsEndpoint);
 
-            request.AddHeader("token", Program.config.SteamToken);
+            request.AddHeader("token", Configuration.AppConfig.SteamToken);
 
-            request.AddParameter("appid", Program.config.AppId);
-            request.AddParameter("feeds", Program.config.Feeds);
+            request.AddParameter("appid", Configuration.AppConfig.AppId);
+            request.AddParameter("feeds", Configuration.AppConfig.Feeds);
             request.AddParameter("count", 1);
 
             var response = await client.GetAsync<Updates>(request);

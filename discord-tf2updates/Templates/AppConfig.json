@@ -1,0 +1,11 @@
+﻿{
+  "DiscordToken": "",
+  "SteamToken": "",
+  "PollingRateInSecs": 15,
+  "SteamWebApiUri": "https://api.steampowered.com",
+  "NewsEndpoint": "/ISteamNews/GetNewsForApp/v0002",
+  "AppId": 440,
+  "Feeds": "tf2_blog",
+  "UseDevGuild": false,
+  "DevGuildId": 0
+}

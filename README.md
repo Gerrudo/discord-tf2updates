@@ -3,20 +3,32 @@ A Discord bot for posting News and Updates from the popular online FPS by Valve,
 
 <img width="438" alt="Screenshot_5" src="https://user-images.githubusercontent.com/43029469/179492201-8e512deb-e360-42e6-87fa-2d159b450991.png">
 
-This project uses Steam's Web API, this fetches news from /ISteamNews/GetNewsForApp/v0002, and converts it into a discord embed which can be posted in any channel by the bot. The Discord bot can be set to run to post updates automatically, or can be asked for updates by running !latest.
+This project uses Steam's Web API, this fetches news from /ISteamNews/GetNewsForApp/v0002, and converts it into a discord embed which can be posted in any channel by the bot. The Discord bot can be set to run to post updates automatically, or can be asked for updates by running /latest-updates.
 
-The bot has a few commands, including !setchannel, !latest and !help
+## Commands
 
-## !help
+### /latest-updates
 
-  Lists all current commands for the bot.
+  Post the latest news and updates.
+
+### /set-channel
+
+  Sets the channel where the latest news and updates will be posted.
   
-## !latest
+### /remove-channel
 
-  This will post the most recent updates/news for Team Fortress 2, this can be run in any channel where the bot has permissions. This command can be run without first     invoking !setchannel.
+  Removes a channel so it will no longer receive news and updates.
 
-## !setchannel
+## Permissions
 
-  This is required to be run before any updates will be posted, the updates will be posted in the channel where this command is run, you can change channel by running     this command again. The bot will check for updates every minute, and will post if any new updates are found.
+  You can either use the link provided here: [Invite](https://discord.com/api/oauth2/authorize?client_id=995286897758830632&permissions=2147502080&scope=bot%20applications.commands)
+
+  ### Current required permissions
   
-  Please note: if you set this option and provide your own Steam Web API key, this will run a GET request every minute, so if you are already using your Steam Web API     key for another purpose, this could push you over the daily request limit.
+  In case you wanted to set permissions manually, weirdo.
+
+  - [x] bot
+    - [x] Send Messages
+    - [x] Embed Links
+    - [x] Use Slash Commands
+  - [x] applications.commands
