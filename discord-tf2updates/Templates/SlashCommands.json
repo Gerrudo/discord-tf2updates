@@ -1,34 +1,12 @@
-﻿{
-  "SlashCommands": [
-    {
-      "CommandName": "latest-updates",
-      "CommandDescription": "Post the latest news and updates.",
-      "GlobalCommand": true
-    },
-    {
-      "CommandName": "set-channel",
-      "CommandDescription": "Sets the channel where the latest news and updates will be posted.",
-      "GlobalCommand": true
-    },
-    {
-      "CommandName": "remove-channel",
-      "CommandDescription": "Removes a channel so it will no longer receive news and updates.",
-      "GlobalCommand": true
-    },
-    {
-      "CommandName": "test-latest-updates",
-      "CommandDescription": "Post the latest news and updates.",
-      "GlobalCommand": false
-    },
-    {
-      "CommandName": "test-set-channel",
-      "CommandDescription": "Sets the channel where the latest news and updates will be posted.",
-      "GlobalCommand": false
-    },
-    {
-      "CommandName": "test-remove-channel",
-      "CommandDescription": "Removes a channel so it will no longer receive news and updates.",
-      "GlobalCommand": false
-    }
-  ]
-}
+﻿[
+  {
+    "CommandName": "example-global-command",
+    "CommandDescription": "This is an example of a Global Slash Command.",
+    "GlobalCommand": true
+  },
+  {
+    "CommandName": "test-example-global-command",
+    "CommandDescription": "This is an example of a Guild Slash Command.",
+    "GlobalCommand": false
+  }
+]

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace discordtf2updates
+﻿namespace discordtf2updates
 {
     public class SlashCommands
     {
