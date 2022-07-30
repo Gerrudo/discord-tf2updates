@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Discord;
@@ -12,41 +13,25 @@ namespace discordtf2updates
     {
         private List<Guild> _guilds;
 
-        public async Task BuildCommandsAsync(DiscordSocketClient client, bool isGlobal)
+        public async Task BuildCommandsAsync(DiscordSocketClient client)
         {
-            //These need to be loaded from an external file!
-            string[] commandNames = new string[]
-                {
-                "latest-updates",
-                "set-channel",
-                "remove-channel"
-                };
-            
-            string[] commandDescriptions =
-                {
-                "Post the latest news and updates.",
-                "Sets the channel where the latest news and updates will be posted.",
-                "Removes a channel so it will no longer receive news and updates."
-                };
+            var _slashCommands = JsonSerializer.Deserialize<List<SlashCommands>>(File.ReadAllText("./SlashCommands.json"));
 
-            for (int i = 0; i < commandNames.Length; i++)
+            for (int i = 0; i < _slashCommands.Count; i++)
             {
                 var newCommand = new SlashCommandBuilder();
-                if (!isGlobal)
-                {
-                    newCommand.WithName($"test-{commandNames[i]}");
-                }
-                newCommand.WithDescription(commandDescriptions[i]);
+                newCommand.WithName(_slashCommands[i].CommandName);
+                newCommand.WithDescription(_slashCommands[i].CommandDescription);
 
                 try
                 {
-                    if (isGlobal)
+                    if (_slashCommands[i].GlobalCommand)
                     {
                         await client.CreateGlobalApplicationCommandAsync(newCommand.Build());
                     }
                     else
                     {
-                        var guild = client.GetGuild(Program.config.DevGuildId);
+                        var guild = client.GetGuild(Configuration.AppConfig.DeveloperGuildId);
                         await guild.CreateApplicationCommandAsync(newCommand.Build());
                     }
                 }
@@ -65,6 +50,8 @@ namespace discordtf2updates
             var embed = _embedUpdates.BuildTF2Embed(CheckUpdates.latestupdate.appnews.newsitems[0]);
 
             await command.RespondAsync(embed: embed.Build());
+
+            CustomConsole.CustomWriteLine($"{command.User.Id} Requested latest updates in channel: {command.Channel.Id}");
         }
 
         public async Task HandleSetUpdateChannelCommand(SocketSlashCommand command)
@@ -80,7 +67,7 @@ namespace discordtf2updates
 
             await command.RespondAsync(response);
 
-            CustomConsole.CustomWriteLine(response);
+            CustomConsole.CustomWriteLine($"{command.User.Id} Added an update channel with Id: {command.Channel.Id}");
         }
 
         public async Task HandleRemoveUpdateChannelCommand(SocketSlashCommand command)
@@ -95,7 +82,7 @@ namespace discordtf2updates
 
             await command.RespondAsync(response);
 
-            CustomConsole.CustomWriteLine(response);
+            CustomConsole.CustomWriteLine($"{command.User.Id} Removed an update channel with Id: {command.Channel.Id}");
         }
 
         public async Task GlobalPostUpdatesAsync(EmbedBuilder embed)

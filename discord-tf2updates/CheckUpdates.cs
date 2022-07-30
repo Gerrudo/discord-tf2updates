@@ -22,7 +22,7 @@ namespace discordtf2updates
             //We store our inital updates so we have a timestamp to compare against.
             var latestUpdates = await InitalUpdates(_apiHandler);
 
-            var periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(Program.config.PollingRateInSecs));
+            var periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(Configuration.AppConfig.PollingRateInSecs));
             while (await periodicTimer.WaitForNextTickAsync())
             {
                 //latest is again set, so we can compare each iteration.
