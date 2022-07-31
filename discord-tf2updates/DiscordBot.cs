@@ -41,41 +41,29 @@ namespace discordtf2updates
 
         private async Task SlashCommandHandlerAsync(SocketSlashCommand command)
         {
-            //The command object is readonly.
-            string filteredCommand = command.Data.Name;
-
-            //This will remove the 'test-' prefix from the front of a guild command, so it is treated the same as if it's global command.
-            if (Configuration.AppConfig.DeveloperMode)
-            {
-                filteredCommand = command.Data.Name.Remove(0, 5);
-            }
-
             try
             {
-                switch (filteredCommand)
+                switch (command.Data.Name)
                 {
-                    case "latest-updates":
+                    case "latestupdates":
                         await _commands.HandleLatestUpdatesCommand(command);
                         break;
-                    case "set-channel":
+                    case "setchannel":
                         await _commands.HandleSetUpdateChannelCommand(command);
                         break;
-                    case "remove-channel":
+                    case "removechannel":
                         await _commands.HandleRemoveUpdateChannelCommand(command);
                         break;
                     default:
-                        if (Configuration.AppConfig.DeveloperMode)
-                        {
-                            await command.RespondAsync("Sorry! I didn't recongise the command you sent. (Pssssst, you're running in Developer Mode, so only commands prefixed with 'test-' will be recognised.)");
-                        }
-                        await command.RespondAsync("Sorry! I didn't recongise the command you sent.");
+                        await command.RespondAsync(@$"Whoops! Something went wrong. Please report this [here](https://github.com/Gerrudo/discord-tf2updates/issues/new), please include your UserId: {command.User.Id}");
+                        CustomConsole.CustomWriteLine($"{command.User.Id} Gave in an invalid command: '{command.Data.Name}'");
                         break;
                 }
             }
             catch (Exception ex)
             {
                 await command.RespondAsync(@$"Whoops! An error occured. Please report this [here](https://github.com/Gerrudo/discord-tf2updates/issues/new), please include your UserId: {command.User.Id}");
-                CustomConsole.CustomWriteLine($"{command.User.Id} Generated an error when calling a command '{filteredCommand}': {ex}");
+                CustomConsole.CustomWriteLine($"{command.User.Id} Generated an error when calling a command '{command.Data.Name}': {ex}");
             }
         }
     }

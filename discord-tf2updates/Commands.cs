@@ -33,8 +33,16 @@ namespace discordtf2updates
                     }
                     else
                     {
-                        var guild = client.GetGuild(Configuration.AppConfig.DeveloperGuildId);
-                        await guild.CreateApplicationCommandAsync(newCommand.Build());
+                        try
+                        {
+                            var guild = client.GetGuild(Configuration.AppConfig.DeveloperGuildId);
+                            await guild.CreateApplicationCommandAsync(newCommand.Build());
+                        }
+                        catch (NullReferenceException ex)
+                        {
+                            CustomConsole.CustomWriteLine($"Could not build Guild Commmands using GuildId: {Configuration.AppConfig.DeveloperGuildId}. Are you using the correct DeveloperGuildId?");
+                            CustomConsole.CustomWriteLine($"{ex}");
+                        }
                     }
                 }
                 catch (HttpException exception)
@@ -49,7 +57,7 @@ namespace discordtf2updates
         public async Task HandleLatestUpdatesCommand(SocketSlashCommand command)
         {
             var _embedUpdates = new EmbedUpdates();
-            var embed = _embedUpdates.BuildTF2Embed(CheckUpdates.latestupdate.appnews.newsitems[0]);
+            var embed = _embedUpdates.BuildTF2Embed(CheckUpdates.latestUpdate.appnews.newsitems[0]);
 
             await command.RespondAsync(embed: embed.Build());
 
