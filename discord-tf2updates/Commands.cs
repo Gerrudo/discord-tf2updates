@@ -11,10 +11,12 @@ namespace discordtf2updates
 {
     public class Commands
     {
-        private static List<Guild> _guilds;
+        private static List<IMessageChannel> _channelList;
 
         public async Task BuildCommandsAsync(DiscordSocketClient client)
         {
+            _channelList = new List<IMessageChannel>();
+
             var _slashCommands = JsonSerializer.Deserialize<List<SlashCommands>>(File.ReadAllText("./SlashCommands.json"));
 
             for (int i = 0; i < _slashCommands.Count; i++)
@@ -56,42 +58,47 @@ namespace discordtf2updates
 
         public async Task HandleSetUpdateChannelCommand(SocketSlashCommand command)
         {
-            _guilds = new List<Guild>();
+            if (_channelList.Contains(command.Channel))
+            {
+                await command.RespondAsync($"{command.Channel.Name} has already been added!");
+            }
+            else
+            {
+                _channelList.Add(command.Channel);
 
-            var Guild = new Guild();
-            Guild.Channel = command.Channel;
+                string response = $@"An update channel: {command.Channel.Name}, has been added by {command.User.Username}";
 
-            _guilds.Add(Guild);
+                await command.RespondAsync(response);
 
-            string response = $@"An update channel: {Guild.Channel.Name}, has been added by {command.User.Username}";
-
-            await command.RespondAsync(response);
-
-            CustomConsole.CustomWriteLine($"{command.User.Id} Added an update channel with Id: {command.Channel.Id}");
+                CustomConsole.CustomWriteLine($"{command.User.Id} Added an update channel with Id: {command.Channel.Id}");
+            }
         }
 
         public async Task HandleRemoveUpdateChannelCommand(SocketSlashCommand command)
         {
-            var Guild = new Guild();
-            Guild.Channel = command.Channel;
+            if (!_channelList.Contains(command.Channel))
+            {
+                await command.RespondAsync($"{command.Channel.Name} has not been added!");
+            }
+            else
+            {
+                _channelList.Remove(command.Channel);
 
-            //Currently this is a limitation, as it will remove the whole Guild object, meaning all Channels that were added from a Guild will be removed.
-            _guilds.Remove(Guild);
+                string response = $@"An update channel: {command.Channel.Name}, has been removed by {command.User.Username}";
 
-            string response = $@"An update channel: {Guild.Channel.Name}, has been removed by {command.User.Username}";
+                await command.RespondAsync(response);
 
-            await command.RespondAsync(response);
-
-            CustomConsole.CustomWriteLine($"{command.User.Id} Removed an update channel with Id: {command.Channel.Id}");
+                CustomConsole.CustomWriteLine($"{command.User.Id} Removed an update channel with Id: {command.Channel.Id}");
+            }
         }
 
         public async Task GlobalPostUpdatesAsync(EmbedBuilder embed)
         {
-            foreach (Guild Guild in _guilds)
+            foreach (IMessageChannel Channel in _channelList)
             {
-                await Guild.Channel.SendMessageAsync(embed: embed.Build());
+                await Channel.SendMessageAsync(embed: embed.Build());
 
-                CustomConsole.CustomWriteLine($@"Sending Embed to {Guild.Channel.Name}");
+                CustomConsole.CustomWriteLine($@"Sending Embed to {Channel.Name}");
             }
         }
     }
