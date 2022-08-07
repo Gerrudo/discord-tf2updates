@@ -32,7 +32,10 @@ namespace discordtf2updates
 
         private async Task<Updates> CheckForUpdatesAsync(ApiHandler apiHandler, Updates currentUpdate)
         {
-            CustomConsole.CustomWriteLine("Checking Steam for updates...");
+            if (Configuration.AppConfig.DeveloperMode)
+            {
+                CustomConsole.CustomWriteLine("Checking Steam for updates...");
+            }
 
             latestUpdate = await apiHandler.GetAppNewsAsync();
 
@@ -44,7 +47,7 @@ namespace discordtf2updates
                 var embed = _embedUpdates.BuildTF2Embed(latestUpdate.appnews.newsitems[0]);
 
                 var _commands = new Commands();
-                await _commands.GlobalPostUpdatesAsync(embed);
+                await _commands.PostUpdatesAsync(embed);
             }
 
             return latestUpdate;
