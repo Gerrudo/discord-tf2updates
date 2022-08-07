@@ -100,7 +100,7 @@ namespace discordtf2updates
             }
         }
 
-        public async Task GlobalPostUpdatesAsync(EmbedBuilder embed)
+        public async Task PostUpdatesAsync(EmbedBuilder embed)
         {
             foreach (IMessageChannel Channel in _channelList)
             {
