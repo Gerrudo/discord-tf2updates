@@ -61,3 +61,10 @@ This project uses Steam's Web API, this fetches news from /ISteamNews/GetNewsFor
     - Required if you have one or more commands which use guild commands. guild commands for this application are only used for Development Purposes.
 
   ### SlashCommands
+  
+  - CommandName
+    - Name of the command, will be automatically prefixed with / when used in discord so don't set it to "/mycommandname".
+  - CommandDescription
+    - Description of the command. Will be shown to the user in preview when typing commands.
+  - GlobalCommand
+    - Will create a global commmand if set to true, will create a guild command if set to false.
