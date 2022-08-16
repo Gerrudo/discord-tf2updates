@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Discord;
@@ -66,7 +67,7 @@ namespace discordtf2updates
 
         public async Task HandleSetUpdateChannelCommand(SocketSlashCommand command)
         {
-            if (_channelList.Contains(command.Channel))
+            if (_channelList.Any(Channel => Channel.Id == command.Channel.Id))
             {
                 await command.RespondAsync($"{command.Channel.Name} has already been added!");
             }
@@ -84,7 +85,7 @@ namespace discordtf2updates
 
         public async Task HandleRemoveUpdateChannelCommand(SocketSlashCommand command)
         {
-            if (!_channelList.Contains(command.Channel))
+            if (!_channelList.Any(Channel => Channel.Id == command.Channel.Id))
             {
                 await command.RespondAsync($"{command.Channel.Name} has not been added!");
             }
