@@ -85,7 +85,7 @@ namespace discordtf2updates
 
         public async Task HandleRemoveUpdateChannelCommand(SocketSlashCommand command)
         {
-            if (_channelList.Any(Channel => Channel.Id == command.Channel.Id))
+            if (!_channelList.Any(Channel => Channel.Id == command.Channel.Id))
             {
                 await command.RespondAsync($"{command.Channel.Name} has not been added!");
             }
