@@ -2,7 +2,12 @@
 
 namespace discordtf2updates
 {
-    public class EmbedUpdates
+    public interface IEmbedUpdates
+    {
+        EmbedBuilder BuildTF2Embed(Newsitem newsitem);
+    }
+
+    public class EmbedUpdates : IEmbedUpdates
     {
         public EmbedBuilder BuildTF2Embed(Newsitem newsitem)
         {

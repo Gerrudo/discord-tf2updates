@@ -10,6 +10,7 @@ namespace discordtf2updates
             await _discordBot.StartAsync();
 
             var _checkUpdates = new CheckUpdates();
+
             await _checkUpdates.StartBackgroundCheckAsync();
 
             await Task.Delay(-1);

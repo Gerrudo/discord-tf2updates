@@ -31,13 +31,14 @@ namespace discordtf2updates
 
             latestUpdate = await apiHandler.GetAppNewsAsync();
 
-            if (latestUpdate.appnews.newsitems[0].date > currentUpdate.appnews.newsitems[0].date)
+            if (latestUpdate.appnews.newsitems[0].date >= currentUpdate.appnews.newsitems[0].date)
             {
                 CustomConsole.CustomWriteLine("Updates found, posting to Discord.");
 
-                var _embedUpdates = new EmbedUpdates();
-                var embed = _embedUpdates.BuildTF2Embed(latestUpdate.appnews.newsitems[0]);
-
+                //var _embedUpdates = new EmbedUpdates();
+                IEmbedUpdates EmbedUpdates = new EmbedUpdates();
+                var embed = EmbedUpdates.BuildTF2Embed(latestUpdate.appnews.newsitems[0]);
+                
                 var _commands = new Commands();
                 await _commands.PostUpdatesAsync(embed);
             }
